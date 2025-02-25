@@ -1,0 +1,14 @@
+body{
+    background-color: aqua;
+    margin: 10px auto;
+}
+
+div{
+    background-color: green;
+    border: 1px solid black;
+    margin: 10px;
+}
+
+p{
+    text-align: center;
+}

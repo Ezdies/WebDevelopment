@@ -1,0 +1,23 @@
+body{
+    background-color: aqua;
+    margin: 10px auto;
+}
+
+div{
+    display: flex;
+    justify-content: center; 
+    background-color: green;
+    border: 1px solid black;
+    margin: 10px;
+    width: 30%;
+}
+
+body{
+    display: flex;
+    flex-direction: row;
+}
+
+p{
+    display: flex;
+    text-align: center;
+}
