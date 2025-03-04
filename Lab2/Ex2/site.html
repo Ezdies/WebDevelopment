@@ -4,7 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Curriculum Vitae</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 20px;
+    background-color: white;
+}
+
+.header {
+    background-color: aqua;
+    text-align: center;
+    padding: 15px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.section {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.content-box {
+    display: grid;
+    grid-template-columns: 30% 70%;
+    gap: 10px;
+    padding: 10px;
+}
+
+
+.col-left, .col-right {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 3px solid black;
+    justify-content: space-between;
+}
+
+.col-left {
+    text-align: right;
+    
+}
+
+    </style>
 </head>
 <body>
     <div class="header">Curriculum Vitae</div>
