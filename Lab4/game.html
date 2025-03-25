@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Game with Rotation</title>
+    <style>
+        #game-container {
+            width: 640px;
+            height: 480px;
+            margin: auto;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game" width="640" height="480">
+            Twoja przeglądarka nie obsługuje elementu canvas.
+        </canvas>
+    </div>
+
+    <script>
+        class Hero {
+            constructor(x, y, width, height, canvasWidth, canvasHeight) {
+                this.position = { x, y };
+                this.width = width;
+                this.height = height;
+                this.canvasWidth = canvasWidth;
+                this.canvasHeight = canvasHeight;
+                this.score = 0;
+                this.angle = 0;
+                this.direction = { x: 2, y: 0 };
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+                ctx.translate(this.position.x + this.width / 2, this.position.y + this.height / 2);
+                ctx.rotate(this.angle);
+                ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+                ctx.restore();
+            }
+
+            checkCollision(newX, newY) {
+                return (
+                    newX >= 0 &&
+                    newX + this.width <= this.canvasWidth &&
+                    newY >= 0 &&
+                    newY + this.height <= this.canvasHeight
+                );
+            }
+
+            move() {
+                const newX = this.position.x + this.direction.x;
+                const newY = this.position.y + this.direction.y;
+
+                if (this.checkCollision(newX, newY)) {
+                    this.position.x = newX;
+                    this.position.y = newY;
+                }
+            }
+
+            turnLeft() {
+                this.angle -= Math.PI / 2;
+                this.updateDirection();
+            }
+
+            turnRight() {
+                this.angle += Math.PI / 2;
+                this.updateDirection();
+            }
+
+            updateDirection() {
+                this.direction.x = Math.cos(this.angle) * 2;
+                this.direction.y = Math.sin(this.angle) * 2;
+            }
+        }
+
+        class Food {
+            constructor(canvasWidth, canvasHeight) {
+                this.canvasWidth = canvasWidth;
+                this.canvasHeight = canvasHeight;
+                this.width = 10;
+                this.height = 10;
+                this.position = this.randomPosition();
+            }
+
+            randomPosition() {
+                return {
+                    x: Math.floor(Math.random() * (this.canvasWidth - this.width)),
+                    y: Math.floor(Math.random() * (this.canvasHeight - this.height))
+                };
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.fillStyle = 'green';
+                ctx.translate(this.position.x, this.position.y);
+                ctx.fillRect(0, 0, this.width, this.height);
+                ctx.restore();
+            }
+
+            checkCollision(hero) {
+                return !(
+                    hero.position.x > this.position.x + this.width ||
+                    hero.position.x + hero.width < this.position.x ||
+                    hero.position.y > this.position.y + this.height ||
+                    hero.position.y + hero.height < this.position.y
+                );
+            }
+
+            relocate() {
+                this.position = this.randomPosition();
+            }
+        }
+
+        class Game {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.hero = new Hero(320, 300, 10, 30, this.canvas.width, this.canvas.height);
+                this.food = new Food(this.canvas.width, this.canvas.height);
+                this.welcomeScreenActive = true;
+
+                window.addEventListener('keydown', (e) => this.handleKeyDown(e), false);
+            }
+
+            clearCanvas() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            drawScore() {
+                this.ctx.font = '20px sans-serif';
+                this.ctx.textAlign = 'left';
+                this.ctx.fillStyle = 'black';
+                this.ctx.fillText(`Score: ${this.hero.score}`, 10, 25);
+            }
+
+            gameLoop() {
+                this.clearCanvas();
+                this.hero.move();
+                this.hero.draw(this.ctx);
+                this.food.draw(this.ctx);
+                this.checkFoodCollision();
+                this.drawScore();
+                requestAnimationFrame(() => this.gameLoop());
+            }
+
+            checkFoodCollision() {
+                if (this.food.checkCollision(this.hero)) {
+                    this.hero.score += 1;
+                    this.food.relocate();
+                }
+            }
+
+            handleKeyDown(e) {
+                if (this.welcomeScreenActive) {
+                    this.clearCanvas();
+                    this.welcomeScreenActive = false;
+                    requestAnimationFrame(() => this.gameLoop());
+                }
+
+                switch (e.keyCode) {
+                    case 37: this.hero.turnLeft(); break;
+                    case 39: this.hero.turnRight(); break;
+                }
+            }
+
+            init() {
+                this.hero.draw(this.ctx);
+                this.food.draw(this.ctx);
+            }
+        }
+
+        window.onload = () => {
+            const game = new Game('game');
+            game.init();
+        };
+    </script>
+</body>
+</html>
